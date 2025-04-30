@@ -28,9 +28,9 @@ db.run(`CREATE TABLE IF NOT EXISTS usuarios (
 app.use(express.json());
 //---------------------------------------------------
 app.post('/registro', async (req, res) => {
-    const { nombre, contraseña } = req.body;
+    const { usuario, contraseña } = req.body;
 
-    if (!nombre || !contraseña) {
+    if (!usuario || !contraseña) {
         return res.status(400).send('Por favor, envía nombre y contraseña.');
     }
 
@@ -38,7 +38,7 @@ app.post('/registro', async (req, res) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(contraseña, saltRounds);
 
-        db.run(`INSERT INTO usuarios (nombre, contraseña) VALUES (?, ?)`, [nombre, hashedPassword], function(err) {
+        db.run(`INSERT INTO usuarios (nombre, contraseña) VALUES (?, ?)`, [usuario, hashedPassword], function(err) {
             if (err) {
                 return res.status(500).send('Error al registrar el usuario.');
             }
@@ -50,13 +50,13 @@ app.post('/registro', async (req, res) => {
 });
 //---------------------------------------------------
 app.post('/login', (req, res) => {
-    const { nombre, contraseña } = req.body;
+    const { usuario, contraseña } = req.body;
 
-    if (!nombre || !contraseña) {
+    if (!usuario || !contraseña) {
         return res.status(400).send('Por favor, envía nombre y contraseña.');
     }
 
-    db.get(`SELECT * FROM usuarios WHERE nombre = ?`, [nombre], async (err, row) => {
+    db.get(`SELECT * FROM usuarios WHERE nombre = ?`, [usuario], async (err, row) => {
         if (err) return res.status(500).send('Error en la base de datos.');
         if (!row) return res.status(404).send('Usuario no encontrado.');
 
